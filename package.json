@@ -1,0 +1,12 @@
+{
+  "name": "flux-sysmon",
+  "version": "1.0.0",
+  "description": "Flux System Monitor",
+  "main": "flux_sysmon.js",
+  "author": "JK",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.6.0",
+    "shelljs": "^0.8.5"
+  }
+}

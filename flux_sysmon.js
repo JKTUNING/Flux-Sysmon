@@ -6,19 +6,18 @@ var cron = require('node-cron');
 const webhookClient = new WebhookClient({ url: webhookURL });
 
 cron.schedule('*/15 * * * *', () => {
-	
+
+	var Hostname = shell.exec(`hostname`,{ silent: true }).stdout.trim();
+
 	var disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
 	var disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();
-	var Hostname = shell.exec(`hostname`,{ silent: true }).stdout.trim();
+	var diskPercent = Math.floor(disku_per.replace('%', ''));
+
 	var memTotal = shell.exec(`cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
 	var memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
-
 	var memPercent = Math.floor((memTotal/(memTotal-memAvailable) - 1) * 100);
 
-	disku_per.replace('%', '');
-
-	if (disku_per > 90 || memPercent > 90 ) {
-	
+	if ( diskPercent > 90 || memPercent > 90 ) {	
 		const embed = new EmbedBuilder()
 		.setTitle(`Disk Usage Report`)
 		.setColor(0xff0000)

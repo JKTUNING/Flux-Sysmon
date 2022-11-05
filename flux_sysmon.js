@@ -18,7 +18,7 @@ const embed = new EmbedBuilder()
 	.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
 	.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 	.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-	.addFields({ name: `MEMPORY AVAILABLE:`, value: `${memAvailable}` });
+	.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
 
 webhookClient.send({
 	username: `FluxNode`,

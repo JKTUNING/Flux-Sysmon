@@ -14,9 +14,9 @@ var memPercent = Math.floor((memTotal/(memTotal-memAvailable) - 1) * 100);
 const embed = new EmbedBuilder()
 	.setTitle(`Disk Usage Report`)
 	.setColor(0xff0000)
-	.addFields({ name: `Host`, value: `${Hostname}`, inline: true })
-	.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}`, inline: true })
-	.addFields({ name: `% MEM USED :`, value: `${memPercent}%`, inline: true })
+	.addFields({ name: `Host`, value: `${Hostname}` })
+	.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
+	.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 	.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
 	.addFields({ name: `MEMPORY AVAILABLE:`, value: `${memAvailable}` });
 

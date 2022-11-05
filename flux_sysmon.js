@@ -12,7 +12,6 @@ const embed = new EmbedBuilder()
     .addFields({ name: `Disk Usage `, value: `${disku_per} of ${disku_max}` });
 
 webhookClient.send({
-	content: `Flux Node System Report`,
 	username: `FluxNode`,
 	avatarURL: `https://i.imgur.com/AfFp7pu.png`,
 	embeds: [embed],

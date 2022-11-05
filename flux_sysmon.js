@@ -5,7 +5,7 @@ const fs = require('fs');
 var cron = require('node-cron');
 const webhookClient = new WebhookClient({ url: webhookURL });
 
-cron.schedule('5 * * * *', () => {
+cron.schedule('*/15 * * * *', () => {
 	
 	var disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
 	var disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();
@@ -15,7 +15,11 @@ cron.schedule('5 * * * *', () => {
 
 	var memPercent = Math.floor((memTotal/(memTotal-memAvailable) - 1) * 100);
 
-	const embed = new EmbedBuilder()
+	disku_per.replace('%', '');
+
+	if (disku_per > 90 || memPercent > 90 ) {
+	
+		const embed = new EmbedBuilder()
 		.setTitle(`Disk Usage Report`)
 		.setColor(0xff0000)
 		.addFields({ name: `Host`, value: `${Hostname}` })
@@ -24,12 +28,12 @@ cron.schedule('5 * * * *', () => {
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
 		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
 
-	webhookClient.send({
-		username: `FluxNode`,
-		avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-		embeds: [embed],
-	});
-
+		webhookClient.send({
+			username: `FluxNode`,
+			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+			embeds: [embed],
+		});
+	}
 });
 
 

@@ -9,11 +9,15 @@ var disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{
 const embed = new EmbedBuilder()
     .setTitle('Disk Usage Report')
     .setColor(0x00FFFF)
-    .addFields({ name: 'Disk Usage', value: `${disku_per} of ${disku_max}`, inline: true });
+    .addFields({ name: 'Disk Usage ', value: `${disku_per} of ${disku_max}` });
 
 webhookClient.send({
 	content: 'Flux Node System Report',
-	username: 'USER',
+	username: 'FluxNode',
 	avatarURL: 'https://i.imgur.com/AfFp7pu.png',
 	embeds: [embed],
 });
+
+
+//nvm install 16
+//npm install pm2@latest -g

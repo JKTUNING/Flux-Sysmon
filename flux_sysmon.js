@@ -1,7 +1,8 @@
 const { EmbedBuilder, WebhookClient } = require('discord.js');
+const { webhookURL, userID } = require('./config.json');
 const shell = require('shelljs');
 const fs = require('fs');
-const webhookClient = new WebhookClient({ url: 'URL' });
+const webhookClient = new WebhookClient({ url: webhookURL });
 
 var disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
 var disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();

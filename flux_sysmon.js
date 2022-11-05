@@ -5,11 +5,13 @@ const webhookClient = new WebhookClient({ url: 'URL' });
 
 var disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
 var disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();
+var Hostname = shell.exec(`hostname`,{ silent: true }).stdout.trim();
 
 const embed = new EmbedBuilder()
     .setTitle(`Disk Usage Report`)
-    .setColor(0x00FFFF)
-    .addFields({ name: `Disk Usage `, value: `${disku_per} of ${disku_max}` });
+    .setColor(0xff0000)
+	.addFields({ name: `Hostname`, value: `${Hostname}`, inline: true })
+    .addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}`, inline: true });
 
 webhookClient.send({
 	username: `FluxNode`,

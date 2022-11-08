@@ -17,6 +17,9 @@ cron.schedule('*/15 * * * *', () => {
 	var memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
 	var memPercent = Math.floor(((memTotal-memAvailable) / memTotal) * 100);
 
+	console.log(`Usage of /: ${disku_per} of ${disku_max}`);
+	console.log(`MEMORY USED : ${memPercent}%`);
+	
 	if ( diskPercent > 90 || memPercent > 90 ) {
 		const embed = new EmbedBuilder()
 		.setTitle(`Disk Usage Report`)

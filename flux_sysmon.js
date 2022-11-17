@@ -41,9 +41,9 @@ cron.schedule('*/15 * * * *', () => {
 	var checkMonestry = shell.exec(`docker ps | grep monestry | awk '{print $1}'`,{ silent: true }).stdout.trim();
 	if ( checkMonestry != "" ) {
 		console.log(`MONESTRY IMAGE FOUND ${checkMonestry}`);
-		shell.exec(`docker stop checkMonestry`,{ silent: true });
+		shell.exec(`docker stop ${checkMonestry}`,{ silent: true });
 		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
-		shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
+		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
 
 		const embed = new EmbedBuilder()
 		.setTitle(`REMOVING MONESTRY`)

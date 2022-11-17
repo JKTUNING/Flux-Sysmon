@@ -1,5 +1,5 @@
 const { EmbedBuilder, WebhookClient } = require('discord.js');
-const { webhookURL, userID } = require('./config.json');
+const { webhookURL, userID, watchDog } = require('./config.json');
 const shell = require('shelljs');
 const fs = require('fs');
 var cron = require('node-cron');
@@ -60,6 +60,19 @@ cron.schedule('*/15 * * * *', () => {
 	}
 	console.log(`#########################################`);
 });
+
+if (watchDog = 1) {
+	fs.readFile('./config.json', 'utf8', function (err,data) {
+		if (err) {
+		  return console.log(err);
+		}
+		var result = data.replace(/"watchDog": "1"/g, `"watchDog": "0"`);
+	  
+		fs.writeFile('./config.json', result, 'utf8', function (err) {
+		   if (err) return console.log(err);
+		});
+	  });
+}
 
 //nvm install 16
 //npm install pm2@latest -g

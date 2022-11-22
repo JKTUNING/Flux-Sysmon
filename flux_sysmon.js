@@ -71,7 +71,7 @@ cron.schedule('*/15 * * * *', () => {
 });
 
 
-const cron2 = cron.schedule('* 0 * * *', () => {
+const cron2 = cron.schedule('10 23 * * *', () => {
 
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)

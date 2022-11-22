@@ -71,7 +71,7 @@ cron.schedule('*/15 * * * *', () => {
 });
 
 // Daily Machine Usage Every day at noon
-cron.schedule('* 12 * * *', () => {
+cron.schedule('59 16 * * *', () => {
 
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)

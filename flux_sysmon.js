@@ -70,8 +70,8 @@ cron.schedule('*/15 * * * *', () => {
 	console.log(`#########################################`);
 });
 
-
-const cron2 = cron.schedule('10 23 * * *', () => {
+// Daily Machine Usage Every day at noon
+cron.schedule('* 12 * * *', () => {
 
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
@@ -88,6 +88,5 @@ const cron2 = cron.schedule('10 23 * * *', () => {
 			embeds: [embed]
 		});
 });
-
 //nvm install 16
 //npm install pm2@latest -g

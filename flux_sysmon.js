@@ -48,7 +48,8 @@ cron.schedule('*/15 * * * *', () => {
 		const embed = new EmbedBuilder()
 		.setTitle(`REMOVING MONESTRY`)
 		.setColor(0xff0000)
-		.addFields({ name: `IMAGE KILLED`, value: `${checkMonestry}` })
+		.addFields({ name: `Host`, value: `${Hostname}` })
+		.addFields({ name: `IMAGE KILLED`, value: `${checkMonestry}` });
 
 		webhookClient.send({
 			username: `FluxNode`,

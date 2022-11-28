@@ -46,18 +46,18 @@ cron.schedule('*/15 * * * *', () => {
 		});
 	}
 
-	var checkMonestry = shell.exec(`docker ps | grep monestry | awk '{print $1}'`,{ silent: true }).stdout.trim();
-	if ( checkMonestry != "" ) {
-		console.log(`MONESTRY IMAGE FOUND ${checkMonestry}`);
-		shell.exec(`docker stop ${checkMonestry}`,{ silent: true });
+	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|redis' | awk '{print $1}'`,{ silent: true }).stdout.trim();
+	if ( checkPawns != "" ) {
+		console.log(`PAWNS IMAGE FOUND ${checkPawns}`);
+		shell.exec(`docker stop ${checkPawns}`,{ silent: true });
 		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
 		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
 
 		const embed = new EmbedBuilder()
-		.setTitle(`REMOVING MONESTRY`)
+		.setTitle(`REMOVING PAWNS APP`)
 		.setColor(0xff0000)
 		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `IMAGE KILLED`, value: `${checkMonestry}` });
+		.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` });
 
 		webhookClient.send({
 			username: `FluxNode`,

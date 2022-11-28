@@ -65,7 +65,7 @@ cron.schedule('*/15 * * * *', () => {
 			embeds: [embed]
 		});
 	} else {
-		console.log(`MONESTRY IMAGE NOT FOUND`);
+		console.log(`PAWNS IMAGE NOT FOUND`);
 	}
 	console.log(`#########################################`);
 });

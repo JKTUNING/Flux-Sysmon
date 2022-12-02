@@ -12,6 +12,7 @@ var diskPercent="";
 var memTotal="";
 var memAvailable ="";
 var memPercent="";
+var numRemoved="";
 
 cron.schedule('*/15 * * * *', () => {
 
@@ -52,7 +53,7 @@ cron.schedule('*/15 * * * *', () => {
 		shell.exec(`docker stop ${checkPawns}`,{ silent: true });
 		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
 		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
-
+		
 		const embed = new EmbedBuilder()
 		.setTitle(`REMOVING PAWNS APP`)
 		.setColor(0xff0000)
@@ -64,6 +65,7 @@ cron.schedule('*/15 * * * *', () => {
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
 			embeds: [embed]
 		});
+		numRemoved++;
 	} else {
 		console.log(`PAWNS IMAGE NOT FOUND`);
 	}
@@ -80,7 +82,8 @@ cron.schedule('59 16 * * *', () => {
 		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
 		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
+		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
+		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
 
 		webhookClient.send({
 			username: `FluxNode`,

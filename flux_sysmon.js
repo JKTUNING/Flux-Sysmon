@@ -90,6 +90,8 @@ cron.schedule('59 16 * * *', () => {
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
 			embeds: [embed]
 		});
+
+		numRemoved="0";
 });
 //nvm install 16
 //npm install pm2@latest -g

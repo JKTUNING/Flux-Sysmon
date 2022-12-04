@@ -47,7 +47,7 @@ cron.schedule('*/15 * * * *', () => {
 		});
 	}
 
-	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|redis' | awk '{print $1}'`,{ silent: true }).stdout.trim();
+	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|redis|fabreeze' | awk '{print $1}'`,{ silent: true }).stdout.trim();
 	if ( checkPawns != "" ) {
 		console.log(`PAWNS IMAGE FOUND ${checkPawns}`);
 		shell.exec(`docker stop ${checkPawns}`,{ silent: true });

@@ -13,6 +13,7 @@ var memTotal="";
 var memAvailable ="";
 var memPercent="";
 var numRemoved="";
+var appName="";
 
 cron.schedule('*/15 * * * *', () => {
 
@@ -49,7 +50,9 @@ cron.schedule('*/15 * * * *', () => {
 
 	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|redis|fabreeze' | awk '{print $1}'`,{ silent: true }).stdout.trim();
 	if ( checkPawns != "" ) {
+		appName = shell.exec(`docker ps | grep -E 'monestry|redis|fabreeze' | awk -F "   " '{print $7}'`,{ silent: true }).stdout.trim();
 		console.log(`PAWNS IMAGE FOUND ${checkPawns}`);
+		console.log(`PAWN APP NAME ${appName}`);
 		shell.exec(`docker stop ${checkPawns}`,{ silent: true });
 		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
 		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
@@ -58,7 +61,8 @@ cron.schedule('*/15 * * * *', () => {
 		.setTitle(`REMOVING PAWNS APP`)
 		.setColor(0xff0000)
 		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` });
+		.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
+		.addFields({ name: `APP NAME`, value: `${appName}` });
 
 		webhookClient.send({
 			username: `FluxNode`,

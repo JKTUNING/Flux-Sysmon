@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #switch to dev branch
-#git checkout dev
+git checkout dev
 
 
 if ! [[ -f config.json ]]; then
@@ -18,6 +18,6 @@ else
     echo -e "config file found - not entry needed"
 fi
 
-#npm install
+npm install
 
-#pm2 start flux_sysmon.js --watch
+pm2 start flux_sysmon.js --watch

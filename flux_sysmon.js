@@ -1,5 +1,5 @@
 const { EmbedBuilder, WebhookClient } = require('discord.js');
-const { webhookURL, userID, watchDog } = require('./config.json');
+const { webhookURL, userID, summaryOnly } = require('./config.json');
 const shell = require('shelljs');
 const fs = require('fs');
 var cron = require('node-cron');
@@ -57,18 +57,21 @@ cron.schedule('*/15 * * * *', () => {
 		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
 		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
 		
-		const embed = new EmbedBuilder()
-		.setTitle(`REMOVING PAWNS APP`)
-		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
-		.addFields({ name: `APP NAME`, value: `${appName}` });
+		// only send indivudual pings if summaryOnly is off
+		if ( summaryOnly != 1 ){
+			const embed = new EmbedBuilder()
+			.setTitle(`REMOVING PAWNS APP`)
+			.setColor(0xff0000)
+			.addFields({ name: `Host`, value: `${Hostname}` })
+			.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
+			.addFields({ name: `APP NAME`, value: `${appName}` });
 
-		webhookClient.send({
-			username: `FluxNode`,
-			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			embeds: [embed]
-		});
+			webhookClient.send({
+				username: `FluxNode`,
+				avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+				embeds: [embed]
+			});
+		}
 		numRemoved++;
 	} else {
 		console.log(`PAWNS IMAGE NOT FOUND`);

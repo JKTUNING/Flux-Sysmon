@@ -25,6 +25,7 @@ fi
 
 #check to see if flux_sysmon is already running and stop/delete it from pm2
 if [[ $(pm2 info flux_sysmon 2>&1 | grep status) != "" ]]; then 
+    echo -e "sysmon already running ... stopping and deleting sysmon from pm2"
     pm2 stop flux_sysmon
     sleep 1
     pm2 delete flux_sysmon

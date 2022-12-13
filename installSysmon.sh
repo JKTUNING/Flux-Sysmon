@@ -29,7 +29,7 @@ if [[ $(pm2 info flux_sysmon 2>&1 | grep status) != "" ]]; then
     pm2 reload flux_sysmon --watch
 else
     echo -e "sysmon not already running ... starting sysmon service"
-    #pm2 start flux_sysmon.js --watch
-    #sleep 2
-    #pm2 save
+    pm2 start flux_sysmon.js --watch
+    sleep 2
+    pm2 save
 fi

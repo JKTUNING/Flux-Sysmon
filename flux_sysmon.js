@@ -34,18 +34,18 @@ cron.schedule('*/15 * * * *', () => {
 
 	if ( diskPercent > 90 || memPercent > 90 ) {
 		const embed = new EmbedBuilder()
-		.setTitle(`Disk Usage Report`)
-		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
-		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
-		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
+			.setTitle(`Disk Usage Report`)
+			.setColor(0xff0000)
+			.addFields({ name: `Host`, value: `${Hostname}` })
+			.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
+			.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
+			.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
+			.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
 
 		webhookClient.send({
 			username: `FluxNode`,
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			embeds: [embed]
+			embeds: [embed],
 		});
 	}
 
@@ -61,16 +61,16 @@ cron.schedule('*/15 * * * *', () => {
 		// only send indivudual pings if summaryOnly is off
 		if ( summaryOnly != 1 ){
 			const embed = new EmbedBuilder()
-			.setTitle(`REMOVING PAWNS APP`)
-			.setColor(0xff0000)
-			.addFields({ name: `Host`, value: `${Hostname}` })
-			.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
-			.addFields({ name: `APP NAME`, value: `${appName}` });
+				.setTitle(`REMOVING PAWNS APP`)
+				.setColor(0xff0000)
+				.addFields({ name: `Host`, value: `${Hostname}` })
+				.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
+				.addFields({ name: `APP NAME`, value: `${appName}` });
 
 			webhookClient.send({
 				username: `FluxNode`,
 				avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-				embeds: [embed]
+				embeds: [embed],
 			});
 		}
 		applist.push(appName);
@@ -82,8 +82,8 @@ cron.schedule('*/15 * * * *', () => {
 });
 
 // Daily Machine Usage Every day at noon
-cron.schedule('*/7 * * * *', () => {
-
+cron.schedule('*/2 * * * *', () => {
+	console.log('Daily Summary');
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
 		.setColor(0xff0000)
@@ -99,9 +99,10 @@ cron.schedule('*/7 * * * *', () => {
 		});
 
 		webhookClient.send({
+			content: 'Webhook test',
 			username: `FluxNode`,
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			embeds: [embed]
+			embeds: [embed],
 		});
 
 		numRemoved="0";

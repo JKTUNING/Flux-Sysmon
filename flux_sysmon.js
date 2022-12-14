@@ -84,29 +84,29 @@ cron.schedule('*/15 * * * *', () => {
 // Daily Machine Usage Every day at noon
 cron.schedule('*/2 * * * *', () => {
 	console.log('Daily Summary');
-	const embed = new EmbedBuilder()
-		.setTitle(`Daily Machine Usage Report`)
-		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
-		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
-		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
-		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
+	// const embed = new EmbedBuilder()
+	// 	.setTitle(`Daily Machine Usage Report`)
+	// 	.setColor(0xff0000)
+	// 	.addFields({ name: `Host`, value: `${Hostname}` })
+	// 	.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
+	// 	.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
+	// 	.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
+	// 	.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
+	// 	.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
 
-		applist.forEach(element => {
-			embed.addFields({ name: `APP REMOVED:`, value: element })
-		});
+	// 	applist.forEach(element => {
+	// 		embed.addFields({ name: `APP REMOVED:`, value: element })
+	// 	});
 
 		webhookClient.send({
 			content: 'Webhook test',
 			username: `FluxNode`,
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			embeds: [embed],
+			//embeds: [embed],
 		});
 
 		numRemoved="0";
-		applist=[];
+		//applist=[];
 });
 //nvm install 16
 //npm install pm2@latest -g

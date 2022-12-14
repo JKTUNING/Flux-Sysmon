@@ -82,20 +82,7 @@ cron.schedule('*/15 * * * *', () => {
 });
 
 // Daily Machine Usage Every day at noon
-cron.schedule('*/1 * * * *', () => {
-	Hostname = shell.exec(`hostname`,{ silent: true }).stdout.trim();
-
-	disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
-	disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();
-	diskPercent = Math.floor(disku_per.replace('%', ''));
-
-	memTotal = shell.exec(`cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
-	memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
-	memPercent = Math.floor(((memTotal-memAvailable) / memTotal) * 100);
-
-	numRemoved = 0;
-	applist.push('mince','redsis');
-
+cron.schedule('59 16 * * *', () => {
 	console.log('Daily Summary');
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
@@ -106,11 +93,7 @@ cron.schedule('*/1 * * * *', () => {
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
 		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
 		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` })
-		.addFields({ name: `PAWNS REMOVED:`, value: `${applist}` });
-	 	
-		//applist.forEach(element => {
-	 	//	embed.addFields({ name: `APP REMOVED:`, value: element })
-	 	//});
+		.addFields({ name: `PAWN NAMES REMOVED:`, value: `${applist}` });
 
 		webhookClient.send({
 			content: 'Webhook test',
@@ -120,7 +103,7 @@ cron.schedule('*/1 * * * *', () => {
 		});
 
 		numRemoved="0";
-		//applist=[];
+		applist=[];
 });
 //nvm install 16
 //npm install pm2@latest -g

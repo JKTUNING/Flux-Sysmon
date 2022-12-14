@@ -83,15 +83,25 @@ cron.schedule('*/15 * * * *', () => {
 
 // Daily Machine Usage Every day at noon
 cron.schedule('*/1 * * * *', () => {
+	Hostname = shell.exec(`hostname`,{ silent: true }).stdout.trim();
+
+	disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
+	disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();
+	diskPercent = Math.floor(disku_per.replace('%', ''));
+
+	memTotal = shell.exec(`cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
+	memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
+	memPercent = Math.floor(((memTotal-memAvailable) / memTotal) * 100);
+
 	console.log('Daily Summary');
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
 		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `${Hostname}` });
-		//.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
-		//.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
-		//.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		//.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
+		.addFields({ name: `Host`, value: `${Hostname}` })
+		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
+		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
+		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
+		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
 		//.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
 
 	// 	applist.forEach(element => {

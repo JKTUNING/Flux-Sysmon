@@ -105,11 +105,12 @@ cron.schedule('*/1 * * * *', () => {
 		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
 		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
-		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
-
-	 	applist.forEach(element => {
-	 		embed.addFields({ name: `APP REMOVED:`, value: element })
-	 	});
+		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` })
+		.addFields({ name: `PAWNS REMOVED:`, value: `${applist}` });
+	 	
+		//applist.forEach(element => {
+	 	//	embed.addFields({ name: `APP REMOVED:`, value: element })
+	 	//});
 
 		webhookClient.send({
 			content: 'Webhook test',

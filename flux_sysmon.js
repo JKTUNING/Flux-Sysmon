@@ -82,12 +82,12 @@ cron.schedule('*/15 * * * *', () => {
 });
 
 // Daily Machine Usage Every day at noon
-cron.schedule('*/2 * * * *', () => {
+cron.schedule('*/1 * * * *', () => {
 	console.log('Daily Summary');
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
 		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `HOST` });
+		.addFields({ name: `Host`, value: `${Hostname}` });
 		//.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
 		//.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 		//.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })

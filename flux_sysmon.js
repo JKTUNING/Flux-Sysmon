@@ -95,7 +95,7 @@ cron.schedule('59 16 * * *', () => {
 		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
 
 		if(applist.length > 0){
-			embed.addField({ name: `PAWN NAMES REMOVED:`, value: `${applist}` });
+			embed.addFields({ name: `PAWN NAMES REMOVED:`, value: `${applist}` });
 		};
 
 		webhookClient.send({

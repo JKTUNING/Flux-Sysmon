@@ -92,8 +92,11 @@ cron.schedule('59 16 * * *', () => {
 		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
 		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
-		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` })
-		.addFields({ name: `PAWN NAMES REMOVED:`, value: `${applist}` });
+		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
+
+		if(applist.length > 0){
+			embed.addField({ name: `PAWN NAMES REMOVED:`, value: `${applist}` });
+		};
 
 		webhookClient.send({
 			content: 'Webhook test',

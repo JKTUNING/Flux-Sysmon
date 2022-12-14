@@ -102,7 +102,7 @@ cron.schedule('*/2 * * * *', () => {
 			content: 'Webhook test',
 			username: `FluxNode`,
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			//embeds: [embed],
+			embeds: [embed],
 		});
 
 		numRemoved="0";

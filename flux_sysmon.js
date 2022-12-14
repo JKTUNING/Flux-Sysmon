@@ -14,6 +14,7 @@ var memAvailable ="";
 var memPercent="";
 var numRemoved="";
 var appName="";
+var applist=[];
 
 cron.schedule('*/15 * * * *', () => {
 
@@ -72,6 +73,7 @@ cron.schedule('*/15 * * * *', () => {
 				embeds: [embed]
 			});
 		}
+		applist.push(appName);
 		numRemoved++;
 	} else {
 		console.log(`PAWNS IMAGE NOT FOUND`);
@@ -80,7 +82,7 @@ cron.schedule('*/15 * * * *', () => {
 });
 
 // Daily Machine Usage Every day at noon
-cron.schedule('59 16 * * *', () => {
+cron.schedule('*/7 * * * *', () => {
 
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
@@ -92,6 +94,10 @@ cron.schedule('59 16 * * *', () => {
 		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
 		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
 
+		applist.forEach(element => {
+			embed.addFields({ name: `APP REMOVED:`, value: element })
+		});
+
 		webhookClient.send({
 			username: `FluxNode`,
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
@@ -99,6 +105,7 @@ cron.schedule('59 16 * * *', () => {
 		});
 
 		numRemoved="0";
+		applist=[];
 });
 //nvm install 16
 //npm install pm2@latest -g

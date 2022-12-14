@@ -93,6 +93,9 @@ cron.schedule('*/1 * * * *', () => {
 	memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
 	memPercent = Math.floor(((memTotal-memAvailable) / memTotal) * 100);
 
+	numRemoved = 0;
+	applist.push('mince','redsis');
+
 	console.log('Daily Summary');
 	const embed = new EmbedBuilder()
 		.setTitle(`Daily Machine Usage Report`)
@@ -101,12 +104,12 @@ cron.schedule('*/1 * * * *', () => {
 		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
 		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
-		//.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
+		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
+		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
 
-	// 	applist.forEach(element => {
-	// 		embed.addFields({ name: `APP REMOVED:`, value: element })
-	// 	});
+	 	applist.forEach(element => {
+	 		embed.addFields({ name: `APP REMOVED:`, value: element })
+	 	});
 
 		webhookClient.send({
 			content: 'Webhook test',

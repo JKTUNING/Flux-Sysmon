@@ -12,7 +12,7 @@ var diskPercent="";
 var memTotal="";
 var memAvailable ="";
 var memPercent="";
-var numRemoved="";
+var numRemoved="0";
 var appName="";
 
 cron.schedule('*/15 * * * *', () => {
@@ -48,7 +48,7 @@ cron.schedule('*/15 * * * *', () => {
 		});
 	}
 
-	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|redis|fabreeze' | awk '{print $1}'`,{ silent: true }).stdout.trim();
+	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|fabreeze' | awk '{print $1}'`,{ silent: true }).stdout.trim();
 	if ( checkPawns != "" ) {
 		appName = shell.exec(`docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Names}}" | grep -E 'monestry|redis|fabreeze' | awk '{print $3}'`,{ silent: true }).stdout.trim();
 		console.log(`PAWNS IMAGE FOUND ${checkPawns}`);

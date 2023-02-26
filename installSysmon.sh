@@ -4,7 +4,7 @@ if ! [[ -f config.json ]]; then
     touch config.json
     userWebHook=$(whiptail --inputbox "Enter your Discord Webhook URL" 8 60 3>&1 1>&2 2>&3)
     userNick=$(whiptail --inputbox "Enter your Discord USER ID" 8 60 3>&1 1>&2 2>&3)
-    summaryOnly=$(whiptail --inputbox "Send only summary notifications? Enter: (0/1)" 3>&1 1>&2 2>&3)
+    summaryOnly=$(whiptail --inputbox "Send only summary notifications? Enter: (0/1)" 8 60 3>&1 1>&2 2>&3)
     cat > config.json <<EOF
 {
   "webhookURL" : "$userWebHook",

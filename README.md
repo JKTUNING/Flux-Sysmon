@@ -4,7 +4,8 @@
 ```
 {
     "webhookURL" : "<yourWebhook>",
-    "userID" : "<yourID>"
+    "userID" : "<yourID>",
+    "summaryOnly" : "(0/1)"
 }
 ```
 ## To install the packages you need to run this inside the Flux-Sysmon Folder

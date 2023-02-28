@@ -5,7 +5,8 @@
 {
     "webhookURL" : "<yourWebhook>",
     "userID" : "<yourID>",
-    "summaryOnly" : "(0/1)"
+    "summaryOnly" : "(0/1)",
+    "appOwner" : "<yourZelID>"
 }
 ```
 ## To install the packages you need to run this inside the Flux-Sysmon Folder

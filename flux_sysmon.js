@@ -1,7 +1,7 @@
 const { EmbedBuilder, WebhookClient } = require('discord.js');
-const { webhookURL, userID, summaryOnly } = require('./config.json');
+const { webhookURL, userID, summaryOnly, appOwner } = require('./config.json');
+const axios = require('axios');
 const shell = require('shelljs');
-const fs = require('fs');
 var cron = require('node-cron');
 const webhookClient = new WebhookClient({ url: webhookURL });
 
@@ -12,8 +12,89 @@ var diskPercent="";
 var memTotal="";
 var memAvailable ="";
 var memPercent="";
-var numRemoved="0";
-var appName="";
+
+var ownerAppData = [];
+
+async function getGlobalApps() {
+	try {
+	  const response = await axios.get('https://api.runonflux.io/apps/globalappsspecifications');
+	  const apps = response.data.data;
+	  apps.forEach((app) => {		
+		if (app?.owner == appOwner) {
+			ownerAppData.push(app);
+		}
+	  });
+	  return ownerAppData;
+	} catch (error) {
+	  log.error(error);
+	  return [];
+	}
+}
+
+async function getCurrentBlockHeight() {
+	try {
+	  const response = await axios.get('https://api.runonflux.io/daemon/getinfo');
+	  cachedHeight = response.data?.data?.blocks;
+	  return cachedHeight;
+	} catch (error) {
+	  log.error(error);
+	  return 0;
+	}
+}
+
+async function NotifyExpiringApps(){
+	const myApps = await getGlobalApps();
+	const height = await getCurrentBlockHeight();
+
+	if (height > 0) {
+		myApps.forEach((myApps) => {
+			let appNotify = false;
+			let message = "";
+			let expireHeight = 0;
+			if (myApps.expire) {
+				expireHeight = myApps.height + myApps.expire
+				console.log(`${myApps.name} -- Expire Height - ${expireHeight}`)
+			} else {
+				return
+			}
+	
+			if (expireHeight < height + 3600 && expireHeight > height + 2880) {
+				appNotify = true;
+				message="expiring in less than 5 days";
+			}
+			else if(expireHeight < height + 2160 && expireHeight > height + 1440){
+				appNotify = true;
+				message="expiring in less than 3 days";
+			}
+			else if(expireHeight < height + 1440 && expireHeight > height + 720){
+				appNotify = true;
+				message="expiring in less than 2 days";
+			}
+			else if(expireHeight < height + 720 && expireHeight > height){
+				appNotify = true;
+				message="expiring within 24 hours!";
+			}
+			else if(height > expireHeight){
+				appNotify = true;
+				message="expired!";
+			}
+	
+			if (appNotify) {
+				const embed = new EmbedBuilder()
+				.setTitle(`App ${message}`)
+				.setColor(0xff0000)
+				.addFields({ name: `App`, value: `${myApps.name}` })
+				.addFields({ name: `Expire Height:`, value: `${expireHeight}` });
+	
+				webhookClient.send({
+					username: `FluxNode`,
+					avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+					embeds: [embed]
+				});
+			}		
+		});
+	}	
+}
 
 cron.schedule('*/15 * * * *', () => {
 
@@ -47,39 +128,10 @@ cron.schedule('*/15 * * * *', () => {
 			embeds: [embed]
 		});
 	}
-
-	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|go-socks5-proxy|fabreeze' | awk '{print $1}'`,{ silent: true }).stdout.trim();
-	if ( checkPawns != "" ) {
-		appName = shell.exec(`docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Names}}" | grep -E 'monestry|go-socks5-proxy|fabreeze' | awk '{print $3}'`,{ silent: true }).stdout.trim();
-		console.log(`PAWNS IMAGE FOUND ${checkPawns}`);
-		console.log(`PAWN APP NAME ${appName}`);
-		shell.exec(`docker stop ${checkPawns}`,{ silent: true });
-		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
-		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
-		
-		// only send indivudual pings if summaryOnly is off
-		if ( summaryOnly != 1 ){
-			const embed = new EmbedBuilder()
-			.setTitle(`REMOVING PAWNS APP`)
-			.setColor(0xff0000)
-			.addFields({ name: `Host`, value: `${Hostname}` })
-			.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
-			.addFields({ name: `APP NAME`, value: `${appName}` });
-
-			webhookClient.send({
-				username: `FluxNode`,
-				avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-				embeds: [embed]
-			});
-		}
-		numRemoved++;
-	} else {
-		console.log(`PAWNS IMAGE NOT FOUND`);
-	}
 	console.log(`#########################################`);
 });
 
-// Daily Machine Usage Every day at noon
+// Daily Machine Usage Every day at 4:59pm
 cron.schedule('59 16 * * *', () => {
 
 	const embed = new EmbedBuilder()
@@ -89,16 +141,21 @@ cron.schedule('59 16 * * *', () => {
 		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
 		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
 		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
-		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
+		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
 
 		webhookClient.send({
 			username: `FluxNode`,
 			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
 			embeds: [embed]
 		});
-
-		numRemoved="0";
 });
+
+// Every day at 1:07pm
+cron.schedule('7 13 * * *', () => {
+	if (appOwner != "" || appOwner != null) {
+		NotifyExpiringApps();
+	}	
+});
+
 //nvm install 16
 //npm install pm2@latest -g

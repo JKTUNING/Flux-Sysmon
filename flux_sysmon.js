@@ -47,13 +47,12 @@ async function NotifyExpiringApps(){
 	const height = await getCurrentBlockHeight();
 
 	if (height > 0) {
-		myApps.forEach((myApps) => {
+		myApps.forEach((checkApp) => {
 			let appNotify = false;
 			let message = "";
 			let expireHeight = 0;
-			if (myApps.expire) {
-				expireHeight = myApps.height + myApps.expire
-				console.log(`${myApps.name} -- Expire Height - ${expireHeight}`)
+			if (checkApp.expire) {
+				expireHeight = checkApp.height + checkApp.expire
 			} else {
 				return
 			}
@@ -80,18 +79,19 @@ async function NotifyExpiringApps(){
 			}
 	
 			if (appNotify) {
+				console.log(`${checkApp.name} ${message}`);
 				const embed = new EmbedBuilder()
 				.setTitle(`App ${message}`)
 				.setColor(0xff0000)
-				.addFields({ name: `App`, value: `${myApps.name}` })
+				.addFields({ name: `App`, value: `${checkApp.name}` })
 				.addFields({ name: `Expire Height:`, value: `${expireHeight}` });
 	
 				webhookClient.send({
-					username: `FluxNode`,
-					avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-					embeds: [embed]
+						username: `FluxNode`,
+						avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+						embeds: [embed]
 				});
-			}		
+			}	
 		});
 	}	
 }
@@ -150,8 +150,8 @@ cron.schedule('59 16 * * *', () => {
 		});
 });
 
-// Every day at 1:07pm
-cron.schedule('7 13 * * *', () => {
+// Every day at 8:07pm
+cron.schedule('7 20 * * *', () => {
 	if (appOwner != "" || appOwner != null) {
 		NotifyExpiringApps();
 	}	

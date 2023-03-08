@@ -45,12 +45,15 @@ async function getCurrentBlockHeight() {
 async function NotifyExpiringApps() {
 	const myApps = await getGlobalApps();
 	const height = await getCurrentBlockHeight();
+	let appNotify = false;
+	let message = "";
+	let expireHeight = 0;
 
 	if (height > 0) {
 		myApps.forEach((checkApp) => {
-			let appNotify = false;
-			let message = "";
-			let expireHeight = 0;
+			appNotify = false;
+			message = "";
+			expireHeight = 0;
 			if (checkApp.expire) {
 				expireHeight = checkApp.height + checkApp.expire
 			} else {
@@ -153,7 +156,7 @@ cron.schedule('59 16 * * *', () => {
 });
 
 // Every day at 8:07pm
-cron.schedule('7 20 * * *', () => {
+cron.schedule('7 12 * * *', () => {
 	if (appOwner != "" || appOwner != null) {
 		NotifyExpiringApps();
 	}

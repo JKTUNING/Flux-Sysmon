@@ -155,7 +155,7 @@ cron.schedule('59 16 * * *', () => {
 	});
 });
 
-// Every day at 8:07pm
+// Every day at 12:07pm
 cron.schedule('7 12 * * *', () => {
 	if (appOwner != "" || appOwner != null) {
 		NotifyExpiringApps();

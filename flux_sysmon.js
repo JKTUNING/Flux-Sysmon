@@ -27,15 +27,16 @@ try {
   discordNotify = false;
 }
 
+/**
+ * Pulls current running application specs from Flux API
+ * @returns {Promise<Array>} A promise that resolves to an array of apps owned by appOwner.
+ * @error If an error occurs or no apps are found, an empty array is returned.
+ */
 async function getGlobalApps() {
   try {
     const response = await axios.get("https://api.runonflux.io/apps/globalappsspecifications");
     const apps = response.data.data;
-    apps.forEach((app) => {
-      if (app?.owner == appOwner) {
-        ownerAppData.push(app);
-      }
-    });
+    ownerAppData = apps.filter((app) => app?.owner === appOwner);
     return ownerAppData;
   } catch (error) {
     console.log(error);
@@ -43,6 +44,11 @@ async function getGlobalApps() {
   }
 }
 
+/**
+ * 
+ * @returns {Promise<number>} A promise that resolves to the current blockHeight of Flux network
+ * @error If an error occurs then 0 is returned
+ */
 async function getCurrentBlockHeight() {
   try {
     const response = await axios.get("https://api.runonflux.io/daemon/getinfo");
@@ -53,6 +59,10 @@ async function getCurrentBlockHeight() {
   }
 }
 
+/**
+ * Notifies owner via webhook about expiring apps on Flux network
+ * @returns {Promise<void>} A promise that resolves when the notification process is complete.
+ */
 async function NotifyExpiringApps() {
   const myApps = await getGlobalApps();
   const height = await getCurrentBlockHeight();
@@ -61,10 +71,11 @@ async function NotifyExpiringApps() {
   let expireHeight = 0;
 
   if (height > 0) {
-    myApps.forEach((checkApp) => {
+    for (const checkApp of myApps) {
       appNotify = false;
       message = "";
       expireHeight = 0;
+
       if (checkApp.expire) {
         expireHeight = checkApp.height + checkApp.expire;
       } else {
@@ -104,7 +115,7 @@ async function NotifyExpiringApps() {
           });
         }, 500);
       }
-    });
+    };
   }
 }
 
@@ -190,5 +201,3 @@ cron.schedule("59 16 * * *", () => {
   }
   numRemoved = "0";
 });
-//nvm install 16
-//npm install pm2@latest -g

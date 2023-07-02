@@ -1,11 +1,15 @@
 # Flux-Sysmon
 
-```Requires config.json file with webhookurl and userID```
+```Requires config.js file with webhookurl and userID```
 ```
-{
-    "webhookURL" : "<yourWebhook>",
-    "userID" : "<yourID>"
-}
+const config = {
+  webhookURL: "<yourWebhook>",
+  userID: "<yourID>",
+  summaryOnly: "(0/1)",
+  appOwner: "yourZelID",
+};
+
+export default config;
 ```
 ## To install the packages you need to run this inside the Flux-Sysmon Folder
 ```npm install```

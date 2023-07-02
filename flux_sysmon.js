@@ -1,104 +1,194 @@
-const { EmbedBuilder, WebhookClient } = require('discord.js');
-const { webhookURL, userID, summaryOnly } = require('./config.json');
-const shell = require('shelljs');
-const fs = require('fs');
-var cron = require('node-cron');
-const webhookClient = new WebhookClient({ url: webhookURL });
+import { EmbedBuilder, WebhookClient } from "discord.js";
+import axios from "axios";
+import shell from "shelljs";
+import cron from "node-cron";
+import config from "./config.js";
 
-var Hostname="";
-var disku_max="";
-var disku_per="";
-var diskPercent="";
-var memTotal="";
-var memAvailable ="";
-var memPercent="";
-var numRemoved="0";
-var appName="";
+const { webhookURL, userID, summaryOnly, appOwner } = config;
 
-cron.schedule('*/15 * * * *', () => {
+let Hostname = "";
+let disku_max = "";
+let disku_per = "";
+let diskPercent = "";
+let memTotal = "";
+let memAvailable = "";
+let memPercent = "";
+var numRemoved = "0";
+var appName = "";
 
-	Hostname = shell.exec(`hostname`,{ silent: true }).stdout.trim();
+let ownerAppData = [];
+let discordNotify = true;
 
-	disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`,{ silent: true }).stdout.trim();
-	disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`,{ silent: true }).stdout.trim();
-	diskPercent = Math.floor(disku_per.replace('%', ''));
+let webhookClient;
 
-	memTotal = shell.exec(`cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
-	memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `,{ silent: true}).stdout.trim();
-	memPercent = Math.floor(((memTotal-memAvailable) / memTotal) * 100);
+try {
+  webhookClient = new WebhookClient({ url: webhookURL });
+} catch (error) {
+  discordNotify = false;
+}
 
-	console.log(`USAGE OF /: ${disku_per} of ${disku_max}`);
-	console.log(`MEMORY USED : ${memPercent}%`);
-	
+async function getGlobalApps() {
+  try {
+    const response = await axios.get("https://api.runonflux.io/apps/globalappsspecifications");
+    const apps = response.data.data;
+    apps.forEach((app) => {
+      if (app?.owner == appOwner) {
+        ownerAppData.push(app);
+      }
+    });
+    return ownerAppData;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
 
-	if ( diskPercent > 90 || memPercent > 90 ) {
-		const embed = new EmbedBuilder()
-		.setTitle(`Disk Usage Report`)
-		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
-		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
-		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
+async function getCurrentBlockHeight() {
+  try {
+    const response = await axios.get("https://api.runonflux.io/daemon/getinfo");
+    return response.data?.data?.blocks;
+  } catch (error) {
+    console.log(error);
+    return 0;
+  }
+}
 
-		webhookClient.send({
-			username: `FluxNode`,
-			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			embeds: [embed]
-		});
-	}
+async function NotifyExpiringApps() {
+  const myApps = await getGlobalApps();
+  const height = await getCurrentBlockHeight();
+  let appNotify = false;
+  let message = "";
+  let expireHeight = 0;
 
-	var checkPawns = shell.exec(`docker ps | grep -E 'monestry|go-socks5-proxy|fabreeze' | awk '{print $1}'`,{ silent: true }).stdout.trim();
-	if ( checkPawns != "" ) {
-		appName = shell.exec(`docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Names}}" | grep -E 'monestry|go-socks5-proxy|fabreeze' | awk '{print $3}'`,{ silent: true }).stdout.trim();
-		console.log(`PAWNS IMAGE FOUND ${checkPawns}`);
-		console.log(`PAWN APP NAME ${appName}`);
-		shell.exec(`docker stop ${checkPawns}`,{ silent: true });
-		shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`,{ silent: true });
-		//shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
-		
-		// only send indivudual pings if summaryOnly is off
-		if ( summaryOnly != 1 ){
-			const embed = new EmbedBuilder()
-			.setTitle(`REMOVING PAWNS APP`)
-			.setColor(0xff0000)
-			.addFields({ name: `Host`, value: `${Hostname}` })
-			.addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
-			.addFields({ name: `APP NAME`, value: `${appName}` });
+  if (height > 0) {
+    myApps.forEach((checkApp) => {
+      appNotify = false;
+      message = "";
+      expireHeight = 0;
+      if (checkApp.expire) {
+        expireHeight = checkApp.height + checkApp.expire;
+      } else {
+        return;
+      }
 
-			webhookClient.send({
-				username: `FluxNode`,
-				avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-				embeds: [embed]
-			});
-		}
-		numRemoved++;
-	} else {
-		console.log(`PAWNS IMAGE NOT FOUND`);
-	}
-	console.log(`#########################################`);
+      if (expireHeight < height + 3600 && expireHeight > height + 2880) {
+        appNotify = true;
+        message = "expiring in less than 5 days";
+      } else if (expireHeight < height + 2160 && expireHeight > height + 1440) {
+        appNotify = true;
+        message = "expiring in less than 3 days";
+      } else if (expireHeight < height + 1440 && expireHeight > height + 720) {
+        appNotify = true;
+        message = "expiring in less than 2 days";
+      } else if (expireHeight < height + 720 && expireHeight > height) {
+        appNotify = true;
+        message = "expiring within 24 hours!";
+      } else if (height > expireHeight) {
+        appNotify = true;
+        message = "expired!";
+      }
+
+      if (appNotify && discordNotify) {
+        console.log(`${checkApp.name} ${message}`);
+        const embed = new EmbedBuilder()
+          .setTitle(`App ${message}`)
+          .setColor(0xff0000)
+          .addFields({ name: `App`, value: `${checkApp.name}` })
+          .addFields({ name: `Expire Height:`, value: `${expireHeight}` });
+
+        setTimeout(() => {
+          webhookClient.send({
+            username: `FluxNode`,
+            avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+            embeds: [embed],
+          });
+        }, 500);
+      }
+    });
+  }
+}
+
+cron.schedule("*/2 * * * *", () => {
+  Hostname = shell.exec(`hostname`, { silent: true }).stdout.trim();
+
+  disku_max = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f2 -d" "`, { silent: true }).stdout.trim();
+  disku_per = shell.exec(`df -Hl / | grep -v File | tr -s ' '|cut -f5 -d" "`, { silent: true }).stdout.trim();
+  diskPercent = Math.floor(disku_per.replace("%", ""));
+
+  memTotal = shell.exec(`cat /proc/meminfo | grep MemTotal | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `, { silent: true }).stdout.trim();
+  memAvailable = shell.exec(`cat /proc/meminfo | grep MemAvailable | awk -F ':' '{print $2}' | awk -F ' kB' '{print $1}' `, { silent: true }).stdout.trim();
+  memPercent = Math.floor(((memTotal - memAvailable) / memTotal) * 100);
+
+  console.log(`USAGE OF /: ${disku_per} of ${disku_max}`);
+  console.log(`MEMORY USED : ${memPercent}%`);
+
+  if ((diskPercent > 90 || memPercent > 90) && discordNotify) {
+    const embed = new EmbedBuilder()
+      .setTitle(`Disk Usage Report`)
+      .setColor(0xff0000)
+      .addFields({ name: `Host`, value: `${Hostname}` })
+      .addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
+      .addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
+      .addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
+      .addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
+
+    webhookClient.send({
+      username: `FluxNode`,
+      avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+      embeds: [embed],
+    });
+  }
+
+  var checkPawns = shell.exec(`docker ps | grep -E 'monestry|go-socks5-proxy|fabreeze' | awk '{print $1}'`, { silent: true }).stdout.trim();
+  if (checkPawns != "") {
+    appName = shell.exec(`docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Names}}" | grep -E 'monestry|go-socks5-proxy|fabreeze' | awk '{print $3}'`, { silent: true }).stdout.trim();
+    console.log(`PAWNS IMAGE FOUND ${checkPawns}`);
+    console.log(`PAWN APP NAME ${appName}`);
+    shell.exec(`docker stop ${checkPawns}`, { silent: true });
+    shell.exec(`docker rm $(docker ps --filter=status=exited --filter=status=dead -q)`, { silent: true });
+    //shell.exec(`docker rmi $(docker images --filter dangling=true -q)`,{ silent: true });
+
+    // only send indivudual pings if summaryOnly is off
+    if (summaryOnly != 1) {
+      const embed = new EmbedBuilder()
+        .setTitle(`REMOVING PAWNS APP`)
+        .setColor(0xff0000)
+        .addFields({ name: `Host`, value: `${Hostname}` })
+        .addFields({ name: `IMAGE KILLED`, value: `${checkPawns}` })
+        .addFields({ name: `APP NAME`, value: `${appName}` });
+
+      webhookClient.send({
+        username: `FluxNode`,
+        avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+        embeds: [embed],
+      });
+    }
+    numRemoved++;
+  } else {
+    console.log(`PAWNS IMAGE NOT FOUND`);
+  }
+  console.log(`#########################################`);
 });
 
 // Daily Machine Usage Every day at noon
-cron.schedule('59 16 * * *', () => {
+cron.schedule("59 16 * * *", () => {
+  if (discordNotify) {
+    const embed = new EmbedBuilder()
+      .setTitle(`Daily Machine Usage Report`)
+      .setColor(0xff0000)
+      .addFields({ name: `Host`, value: `${Hostname}` })
+      .addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
+      .addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
+      .addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
+      .addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` });
 
-	const embed = new EmbedBuilder()
-		.setTitle(`Daily Machine Usage Report`)
-		.setColor(0xff0000)
-		.addFields({ name: `Host`, value: `${Hostname}` })
-		.addFields({ name: `Usage of /:`, value: `${disku_per} of ${disku_max}` })
-		.addFields({ name: `MEMORY USED :`, value: `${memPercent}%` })
-		.addFields({ name: `MEMORY TOTAL:`, value: `${memTotal}` })
-		.addFields({ name: `MEMORY AVAILABLE:`, value: `${memAvailable}` })
-		.addFields({ name: `PAWNS REMOVED:`, value: `${numRemoved}` });
-
-		webhookClient.send({
-			username: `FluxNode`,
-			avatarURL: `https://i.imgur.com/AfFp7pu.png`,
-			embeds: [embed]
-		});
-
-		numRemoved="0";
+    webhookClient.send({
+      username: `FluxNode`,
+      avatarURL: `https://i.imgur.com/AfFp7pu.png`,
+      embeds: [embed],
+    });
+  }
+  numRemoved = "0";
 });
 //nvm install 16
 //npm install pm2@latest -g

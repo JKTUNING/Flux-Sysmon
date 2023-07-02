@@ -201,3 +201,10 @@ cron.schedule("59 16 * * *", () => {
   }
   numRemoved = "0";
 });
+
+// Every day at 12:07pm
+cron.schedule('45 15 * * *', () => {
+	if (appOwner != "" || appOwner != null) {
+		NotifyExpiringApps();
+	}
+});

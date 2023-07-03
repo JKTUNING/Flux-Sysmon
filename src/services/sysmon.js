@@ -8,6 +8,8 @@ let { blockedApps, summaryOnly } = config;
 try {
   if (blockedApps.length) {
     console.log(`Blocked Repos: ${blockedApps}`);
+  } else {
+    console.log(`no blocked apps found in config ...`);
   }
 } catch (error) {
   console.log(`no blocked apps found in config ...`);

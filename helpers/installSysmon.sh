@@ -5,11 +5,13 @@ if ! [[ -f src/config/config.js ]]; then
     userWebHook=$(whiptail --inputbox "Enter your Discord Webhook URL" 8 60 3>&1 1>&2 2>&3)
     userNick=$(whiptail --inputbox "Enter your Discord USER ID" 8 60 3>&1 1>&2 2>&3)
     summaryOnly=$(whiptail --inputbox "Send only summary notifications? Enter: (0/1)" 8 60 3>&1 1>&2 2>&3)
+    appOwner=$(whiptail --inputbox "Zelid of apps you would like expiry notifications" 8 60 3>&1 1>&2 2>&3)
     cat > src/config/config.js <<EOF
 const config={
   webhookURL: "$userWebHook",
   userID: "$userNick",
   summaryOnly: "$summaryOnly",
+  appOwner: "$appOwner",
   blockedApps: [],
 };
 

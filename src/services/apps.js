@@ -18,7 +18,7 @@ try {
  * Notifies owner via webhook about expiring apps on Flux network
  * @returns {Promise<void>} A promise that resolves when the notification process is complete.
  */
-async function NotifyExpiringApps() {
+async function notifyExpiringApps() {
   const myApps = await getGlobalApps(appOwner);
   const height = await getCurrentBlockHeight();
   let appNotify = false;
@@ -68,4 +68,4 @@ async function NotifyExpiringApps() {
   }
 }
 
-export { NotifyExpiringApps };
+export { notifyExpiringApps };

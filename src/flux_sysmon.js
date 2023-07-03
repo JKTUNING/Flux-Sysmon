@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import config from "./config/config.js";
-import { NotifyExpiringApps } from "./services/apps.js";
+import { notifyExpiringApps } from "./services/apps.js";
 import { checkSystem, sendDailyUpdate } from "./services/sysmon.js";
 import { discordNotify } from "./services/discord.js";
 
@@ -26,6 +26,6 @@ cron.schedule("59 16 * * *", () => {
 cron.schedule("7 12 * * *", () => {
   if (appOwner) {
     console.log("Checking for expiring apps ...");
-    NotifyExpiringApps();
+    notifyExpiringApps();
   }
 });

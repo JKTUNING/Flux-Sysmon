@@ -15,8 +15,17 @@ export default config;
 ## To install the packages you need to run this inside the Flux-Sysmon Folder
 ```npm install```
 
+## To auto generate a config file and start the service you can run the installSysmon.sh script in the helpers folder.
+```helpers/installSysmon.hs```
+
 ## To run the flux-sysmon service you can use PM2
 This will run the code every 15 mins and ping discord webhook if disk usage is > 90% or memory usage is > 90%
+
+If appOwner is defined in the config.js file then it will also check for any apps that are close to expiring for that owner.
+
+If blockedApps is defined in the config.js file then it will check for blocked repositories and remove them from running containers.
+
+If summaryOnly is 1 then it will only send 1 discord notification per day with system stats and number of blocked apps removed.
 
 ```pm2 start src/flux_sysmon.js --watch```
 

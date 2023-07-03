@@ -7,7 +7,7 @@ import { discordNotify } from "./services/discord.js";
 const { appOwner } = config;
 
 // Checks system details and blocked apps every 2 mins
-cron.schedule("*/2 * * * *", () => {
+cron.schedule("*/15 * * * *", () => {
   console.log("Checking system ...");
   checkSystem();
 });

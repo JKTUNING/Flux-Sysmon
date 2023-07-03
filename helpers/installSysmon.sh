@@ -1,16 +1,19 @@
 #!/bin/bash
 
-if ! [[ -f config.json ]]; then
-    touch config.json
+if ! [[ -f src/config/config.js ]]; then
+    touch src/config/config.js
     userWebHook=$(whiptail --inputbox "Enter your Discord Webhook URL" 8 60 3>&1 1>&2 2>&3)
     userNick=$(whiptail --inputbox "Enter your Discord USER ID" 8 60 3>&1 1>&2 2>&3)
     summaryOnly=$(whiptail --inputbox "Send only summary notifications? Enter: (0/1)" 8 60 3>&1 1>&2 2>&3)
-    cat > config.json <<EOF
-{
-  "webhookURL" : "$userWebHook",
-  "userID" : "$userNick",
-  "summaryOnly" : "$summaryOnly"
-}
+    cat > src/config/config.js <<EOF
+const config={
+  webhookURL: "$userWebHook",
+  userID: "$userNick",
+  summaryOnly: "$summaryOnly",
+  blockedApps: [],
+};
+
+export default config;
 EOF
 else
     echo -e "config file found - not entry needed"
@@ -18,7 +21,7 @@ fi
 
 if [ ! -d "node_modules" ]; then
     echo -e "installing node modules ..."
-    npm install
+    npm i
 else
     echo -e "packages aleady exist .. npm install skipped"
 fi
@@ -29,7 +32,7 @@ if [[ $(pm2 info flux_sysmon 2>&1 | grep status) != "" ]]; then
     pm2 reload flux_sysmon --watch
 else
     echo -e "sysmon not already running ... starting sysmon service"
-    pm2 start flux_sysmon.js --watch
+    pm2 start src/flux_sysmon.js --watch
     sleep 2
     pm2 save
 fi

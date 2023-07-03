@@ -7,6 +7,7 @@ const config = {
   userID: "<yourID>",
   summaryOnly: "(0/1)",
   appOwner: "yourZelID",
+  blockedApps: ["repo1", "repo2", "etc"],
 };
 
 export default config;
@@ -17,7 +18,7 @@ export default config;
 ## To run the flux-sysmon service you can use PM2
 This will run the code every 15 mins and ping discord webhook if disk usage is > 90% or memory usage is > 90%
 
-```pm2 start flux_sysmon.js --watch```
+```pm2 start src/flux_sysmon.js --watch```
 
 ## Requirements
 ```

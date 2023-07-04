@@ -1,4 +1,7 @@
 [![NodeJS Lint](https://github.com/JKTUNING/Flux-Sysmon/actions/workflows/main.yml/badge.svg)](https://github.com/JKTUNING/Flux-Sysmon/actions/workflows/main.yml)
+![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FJKTUNING%2FFlux-Sysmon%2Fmain%2Fpackage.json&query=%24.version&label=Version)
+
+
 # Flux-Sysmon
 
 ```Requires config.js file with webhookurl and userID```

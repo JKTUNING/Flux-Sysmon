@@ -2,3 +2,4 @@
 .eslint*
 package*
 *.md
+.vscode/settings.json

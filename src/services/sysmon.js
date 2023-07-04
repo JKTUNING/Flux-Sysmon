@@ -7,6 +7,7 @@ let { blockedApps, summaryOnly } = config;
 
 try {
   if (blockedApps.length) {
+    blockedApps = blockedApps.filter((item) => item.length >= 4);
     console.log(`Blocked Repos: ${blockedApps}`);
   } else {
     console.log(`no blocked apps found in config ...`);

@@ -1,3 +1,4 @@
+[![NodeJS Lint](https://github.com/JKTUNING/Flux-Sysmon/actions/workflows/main.yml/badge.svg)](https://github.com/JKTUNING/Flux-Sysmon/actions/workflows/main.yml)
 # Flux-Sysmon
 
 ```Requires config.js file with webhookurl and userID```

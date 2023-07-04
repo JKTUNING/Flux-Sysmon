@@ -12,11 +12,13 @@ const config = {
 
 export default config;
 ```
+## Auto generate config and start the service
+```helpers/installSysmon.sh```
+
+If running the installSysmon script, you don't need to run the following 2 commands as they are done automatically after the config generation.
+
 ## To install the packages you need to run this inside the Flux-Sysmon Folder
 ```npm install```
-
-## To auto generate a config file and start the service you can run the installSysmon.sh script in the helpers folder.
-```helpers/installSysmon.hs```
 
 ## To run the flux-sysmon service you can use PM2
 This will run the code every 15 mins and ping discord webhook if disk usage is > 90% or memory usage is > 90%
